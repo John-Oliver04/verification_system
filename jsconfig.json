@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
+    "baseUrl": "src",         // <--- required
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["*"]            // "@/models/User" → "src/models/User"
     }
   }
 }
