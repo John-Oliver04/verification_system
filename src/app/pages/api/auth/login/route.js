@@ -4,72 +4,71 @@ import bcrypt from "bcryptjs";
 // Import jsonwebtoken to create and verify JWT tokens
 import jwt from "jsonwebtoken";
 
-// Import NextResponse to handle responses and set cookies in App Router
+// Import NextResponse to build responses in App Router
 import { NextResponse } from "next/server";
+
+// Import the cookies API from App Router to manage cookie headers
+import { cookies } from "next/headers";
 
 // Import MongoDB connection helper
 import connectDB from "@/app/lib/db";
 
-// Import the User model that represents the user collection in MongoDB
+// Import the User model representing the users collection in MongoDB
 import User from "@/app/model/User";
 
-// Handle POST requests to /api/auth/login
+// Define the POST request handler for the /api/auth/login route
 export async function POST(req) {
   try {
-    // Parse the request body to get email and password sent from the client
+    // Parse incoming JSON body (sent from login form)
     const body = await req.json();
     const { email, password } = body;
 
-    // Establish connection to the MongoDB database
+    // Connect to MongoDB before querying
     await connectDB();
 
-    // Search for a user with the matching email in the database
+    // Find a user by email (case-sensitive)
     const user = await User.findOne({ email });
 
-    // If user doesn't exist, return a 401 Unauthorized response
+    // If no user is found, return 401 Unauthorized
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 401 });
     }
 
-    // Compare the entered password with the stored hashed password in the DB
+    // Compare the entered password with the hashed password in the DB
     const isMatch = await bcrypt.compare(password, user.password);
 
-    // If passwords do not match, return a 401 Unauthorized response
+    // If password doesn't match, return 401 Unauthorized
     if (!isMatch) {
       return NextResponse.json({ message: "Invalid password" }, { status: 401 });
     }
 
-    // Create a JWT token using user ID and role, valid for 7 days
+    // Generate a JWT token with the user ID and role
     const token = jwt.sign(
       {
-        userId: user._id,   // Unique identifier for the user
-        role: user.role,    // User's role (e.g., admin, user)
+        userId: user._id,   // Unique MongoDB user ID
+        role: user.role,    // Role from user schema (e.g., 'admin', 'user')
       },
-      process.env.JWT_SECRET,  // Secret key stored in .env.local
-      { expiresIn: "7d" }       // Token expiration (7 days)
+      process.env.JWT_SECRET,  // Secret stored securely in .env.local
+      { expiresIn: "7d" }       // Token expires in 7 days
     );
 
-    // Create a NextResponse object with a success message and user role
-    const response = NextResponse.json(
+    // Store the token in an HTTP-only cookie (cannot be accessed by JS)
+    cookies().set({
+      name: "token",              // Cookie name
+      value: token,               // The JWT token
+      httpOnly: true,             // JS can't read this cookie (prevents XSS)
+      path: "/",                  // Cookie accessible from entire domain
+      maxAge: 7 * 24 * 60 * 60,   // Expire after 7 days (in seconds)
+    });
+
+    // Respond to the client with a success message and optional user role
+    return NextResponse.json(
       { message: "Login successful", role: user.role },
       { status: 200 }
     );
 
-    // Store the token in a cookie:
-    // - httpOnly: prevents JavaScript access (more secure)
-    // - path: makes the cookie available site-wide
-    // - maxAge: 7 days in seconds (7 * 24 * 60 * 60)
-    response.cookies.set("token", token, {
-      httpOnly: true,
-      path: "/",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-    });
-
-    // Return the response with the cookie attached
-    return response;
-
   } catch (error) {
-    // Catch any unexpected errors and return a 500 Internal Server Error
+    // Handle and log any unexpected errors (e.g., DB issues, crash)
     console.error("Login error:", error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }

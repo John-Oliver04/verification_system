@@ -6,9 +6,12 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "scan": "react-scan   http://localhost:3000"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.0",
+    "antd": "^5.26.6",
     "bcryptjs": "^3.0.2",
     "cookie": "^1.0.2",
     "js-cookie": "^3.0.5",
@@ -16,7 +19,9 @@
     "mongoose": "^8.16.4",
     "next": "15.4.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-scan": "^0.4.3",
+    "recharts": "^3.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

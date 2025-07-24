@@ -30,7 +30,7 @@ export default function LoginPage() {
       }
 
       // Redirect on success
-      router.push('/dashboard');
+      router.push('/pages/dashboard');
     } catch (err) {
       setError(err.message);
     }
