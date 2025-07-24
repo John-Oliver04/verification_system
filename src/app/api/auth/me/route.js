@@ -12,7 +12,7 @@ export async function GET(req) {
     await connectDB();
 
     // Extract user from token
-    const user = await verifyToken(req);
+    const user = await verifyToken();
 
     // If token is invalid or user is not authenticated
     if (!user) {
@@ -24,7 +24,8 @@ export async function GET(req) {
 
     // Return role and email (or anything you want)
     return NextResponse.json({ role: dbUser.role, email: dbUser.email });
-  } catch (error) {
+    
+  } catch(error) {
     return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
   }
 }

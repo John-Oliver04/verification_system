@@ -46,6 +46,7 @@ export async function POST(req) {
     const token = jwt.sign(
       {
         userId: user._id,   // Unique MongoDB user ID
+        name: user.username,
         role: user.role,    // Role from user schema (e.g., 'admin', 'user')
       },
       process.env.JWT_SECRET,  // Secret stored securely in .env.local
