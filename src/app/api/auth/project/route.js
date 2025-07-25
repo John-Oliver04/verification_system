@@ -5,11 +5,9 @@ import { NextResponse } from "next/server";
 import cookie from "cookie";
 
 export async function POST(req) {
-  console.log("Incoming POST /api/auth/project");
 
   try {
     await connectDB();
-    console.log("✅ Connected to MongoDB");
 
     const cookieHeader = req.headers.get("cookie") || "";
     const parsedCookies = cookie.parse(cookieHeader);
@@ -46,5 +44,18 @@ export async function POST(req) {
   } catch (err) {
     console.error("❌ Server Error:", err);
     return NextResponse.json({ message: "Server error", error: err.message }, { status: 500 });
+  }
+}
+
+// GET: Fetch all projects
+export async function GET() {
+  await connectDB();
+  
+  try {
+    const projects = await Project.find().sort({ dateUploaded: -1 });
+    return NextResponse.json(projects);
+  } catch (err) {
+    console.error("❌ Fetch Error:", err);
+    return NextResponse.json({ message: "Failed to load projects", error: err.message }, { status: 500 });
   }
 }

@@ -1,16 +1,14 @@
 'use client'
 
-import Dropdown from "antd/es/dropdown/dropdown";
-import { Avatar, Menu } from "antd";
-import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
 
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import {
   PieChart, Pie, Cell,
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, CartesianGrid, Legend
-} from "recharts";
+} from "recharts"; 
+import Sidebar from "../../../components/Sidebar";
+import Header from "../../../components/Header";
 
 // Sample static data (replace with real API later)
 const genderData = [
@@ -48,86 +46,26 @@ const COLORS = ["#0088FE", "#FF8042", "#00C49F", "#FFBB28"];
 
 
 export default function DashboardClient({user}) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  const [role, setRole] = useState(user?.role || "");
-  const [username, setUsername] = useState(user?.name || "");
+  const [role, setRole] = useState(user?.role || "unknown");
+  const [username] = useState(user?.name || "unknnown");
 
   if (!user) {
     return <div>401 - Unauthorized. Please <a href="/pages/login">login</a>.</div>;
   }
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/login");
-  };
-
-  const menu = (
-    <Menu>
-      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
-        Logout
-      </Menu.Item>
-    </Menu>
-  );
-
-
  
   return (
     <div className="flex h-screen overflow-hidden">
+
       {/* Sidebar */}
-      <aside
-        className={`bg-gray-800 text-white transition-all duration-300 ${
-          isSidebarOpen ? "w-64" : "w-16"
-        }`}
-      >
-        <div className="flex items-center justify-between p-4">
-          {isSidebarOpen && <h2 className="text-lg font-bold">Dashboard</h2>}
-          <button
-            onClick={toggleSidebar}
-            className="text-white hover:text-yellow-300"
-            title="Toggle Menu"
-          >
-            ☰
-          </button>
-        </div>
-        <nav className="space-y-2 p-4 text-sm">
-          <a href="/pages/dashboard" className="block hover:bg-gray-700 p-2 rounded bg-gray-700">
-            🏠 {isSidebarOpen && "Dashboard"}
-          </a>
-          <a href="/pages/project" className="block hover:bg-gray-700 p-2 rounded">
-            📁 {isSidebarOpen && "Project"}
-          </a>
-          <a href="/pages/verification" className="block hover:bg-gray-700 p-2 rounded">
-            ✅ {isSidebarOpen && "Verification"}
-          </a>
-          <a href="/pages/verified" className="block hover:bg-gray-700 p-2 rounded">
-            🔒 {isSidebarOpen && "Verified"}
-          </a>
-          <a href="/pages/settings" className="block hover:bg-gray-700 p-2 rounded">
-            ⚙️ {isSidebarOpen && "Settings"}
-          </a>
-        </nav>
-      </aside>
+      <Sidebar/>
 
       {/* Main Section */}
-      <main className="flex-1 flex flex-col">
-        <header className="bg-white shadow px-6 py-4 sticky top-0 z-10 flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-green-500">TUPAD Profiling and Verification System</h1>
-
-          <Dropdown overlay={menu} trigger={["click"]}>
-            <div className="flex items-center space-x-2 cursor-pointer">
-              <Avatar size="large" icon={<UserOutlined />} />
-              <span className="font-medium text-gray-700">{username || "User"}</span>
-            </div>
-          </Dropdown>
-        </header>
+      <main className="flex-1 flex flex-col overflow-y-auto max-h-screen">
+        
+        {/* Header */}
+        <Header username={username}/>
 
         <section className="p-6">
           <h2 className="text-xl font-bold mb-2">👋 Welcome to Dashboard!</h2>
