@@ -34,8 +34,12 @@ const VerificationPage = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ id, updates }),
+        body: JSON.stringify({
+        _id: id, // ✅ make sure this is defined
+        updates
+      }),
       });
+
       const json = await res.json();
 
       if (json.success) {
@@ -142,8 +146,12 @@ const FINDINGS_COLORS = {
                           value={b.findings || "N/A"}
                           onChange={(e) => {
                             const newFindings = e.target.value;
-                            const autoStat = newFindings === "Qualified" ? "Validated" : b.stat;
-
+                            const autoStat =
+                                      newFindings === "Qualified"
+                                        ? "Validated"
+                                        : newFindings === "Suspected"
+                                        ? "Working on it"
+                                        : b.stat;
                             setBeneficiaries((prev) =>
                               prev.map((ben) =>
                                 ben._id === b._id

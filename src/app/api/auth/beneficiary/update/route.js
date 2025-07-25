@@ -6,15 +6,21 @@ import Beneficiary from "@/app/model/Beneficiary";
 
 export async function PATCH(req) {
   try {
+
     await connectDB();
+    console.log("database connected in -> PATCH Update Beneficiary");
 
     const { _id, updates } = await req.json();
+
+    console.log(_id);
 
     const updated = await Beneficiary.findByIdAndUpdate(
       _id,
       { $set: updates },
       { new: true }
     );
+
+    console.log(updated);
 
     if (!updated) {
       return NextResponse.json({ success: false, message: "Beneficiary not found" }, { status: 404 });
