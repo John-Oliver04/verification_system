@@ -19,10 +19,8 @@ export async function POST(req) {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("✅ Token Decoded:", decoded);
 
     const body = await req.json();
-    console.log("Request Body:", body);
 
     const { projectName, adl, beneficiaries, municipality } = body;
 
@@ -48,14 +46,31 @@ export async function POST(req) {
 }
 
 // GET: Fetch all projects
-export async function GET() {
+export async function GET(req) {
   await connectDB();
-  
+
   try {
-    const projects = await Project.find().sort({ dateUploaded: -1 });
+    const cookieHeader = req.headers.get("cookie") || "";
+    const parsedCookies = cookie.parse(cookieHeader);
+    const token = parsedCookies.token;
+
+    if (!token) {
+      console.warn("⚠️ No token found in cookies");
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const projects = await Project.find({ uploadedBy: decoded.userId }).sort({ dateUploaded: -1 });
+
     return NextResponse.json(projects);
   } catch (err) {
     console.error("❌ Fetch Error:", err);
-    return NextResponse.json({ message: "Failed to load projects", error: err.message }, { status: 500 });
+    return NextResponse.json(
+      { message: "Failed to load projects", error: err.message },
+      { status: 500 }
+    );
   }
 }
+
+

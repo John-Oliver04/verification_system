@@ -1,25 +1,90 @@
 "use client";
 
+import { useRouter } from "next/navigation"; // Top of component
 import { useEffect, useRef, useState } from "react";
 import { Table, Input, Button, Dropdown, Modal, Form, InputNumber, Upload } from "antd";
 import { DownOutlined, UploadOutlined } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import Sidebar from "@/app/components/Sidebar";
-import { Header } from "antd/es/layout/layout";
+import Header from "@/app/components/Header";
 import Papa from "papaparse";
+import { getUsername } from "@/app/components/GetUsername";
+import jwt from "jsonwebtoken";
+import Unauthorized401 from "@/app/components/Unauthorized401";
+
 
 const { Search } = Input;
 
 const ProjectPage = ({ user }) => {
+  
+  const [userToken, setUserToken] = useState(null);
+
+  useEffect(() => {
+    const getTokenFromCookie = () => {
+      const match = document.cookie.match(/(^| )token=([^;]+)/);
+      return match ? match[2] : null;
+    };
+
+    const token = getTokenFromCookie();
+
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        setUserToken(decoded);
+      } catch (err) {
+        console.error("Invalid token", err);
+        setUserToken(null);
+      }
+    } else {
+      setUserToken(null);
+    }
+  }, []);
+
+  if (userToken === null) {
+    return <Unauthorized401 />;
+  }
+
+
   const [form] = Form.useForm();
   const [csvData, setCsvData] = useState([]);
   const csvRef = useRef([]); // <--- Fix: keep latest csvData between re-renders
 
+  // get user ID
   const [userId] = useState(user?._id || "unknown");
+  // get username
+  const [username, setUsername] = useState("loading...");
+  useEffect(() => {
+    const fetchUsername = async () => {
+      const name = await getUsername();  // no param needed
+      setUsername(name);
+    };
+    fetchUsername();
+  }, []);
+
+
+
+
+
   const [searchText, setSearchText] = useState("");
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const router = useRouter(); // Inside component  
+
+  const handleAction = (actionKey, record) => {
+  if (actionKey === "validate") {
+      // Redirect with projectId as query parameter
+      router.push(`/pages/verification?projectId=${record.key}`);
+    }
+
+    // Optional: Handle other actions like view, edit, etc.
+    else if (actionKey === "view") {
+      console.log("Viewing project:", record.projectName);
+    }
+  };
+
+
 
   // ✅ Handle CSV Upload
   const handleCSVUpload = (file) => {
@@ -170,9 +235,11 @@ const ProjectPage = ({ user }) => {
   }, []);
 
   const actionMenuItems = [
-    { key: "view", label: "View Project" },
-    { key: "edit", label: "Edit Project" },
-    { key: "delete", label: "Delete Project" },
+    { key: "validate", label: "Validate" },
+    { key: "view", label: "View" },
+    { key: "edit", label: "Edit" },
+    { key: "delete", label: "Delete" },
+    { key: "complete", label: "Submit to Admin" },
   ];
 
   const columns = [
@@ -188,7 +255,13 @@ const ProjectPage = ({ user }) => {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <Dropdown menu={{ items: actionMenuItems }}>
+        <Dropdown menu={{
+                          items: actionMenuItems.map((item) => ({
+                            ...item,
+                            onClick: () => handleAction(item.key, record),
+                          })),
+                        }}
+                      >
           <Button>
             Action <DownOutlined />
           </Button>
@@ -210,10 +283,23 @@ const ProjectPage = ({ user }) => {
       <Sidebar />
 
       {/* Main */}
-      <main className="flex-1 flex flex-col">
-        <Header />
+      <main className="flex-1 flex flex-col text-sm">
+        {/* Header */}
+        <Header username={username} />
 
         <section className="p-6">
+           {/* Top Panel for Additional Components */}
+          <div className="bg-gray-100 p-4 mb-4 rounded shadow flex justify-between items-center">
+            <div className="font-semibold text-gray-700">📌 TUPAD Projects Panel</div>
+            {/* You can place buttons or summaries here */}
+            <div>
+              <Button type="link">Stats</Button>
+              <Button type="link">Recent Uploads</Button>
+              <Button type="link">Export</Button>
+            </div>
+          </div>
+
+          {/* Search bar */}
           <div className="mb-4 flex justify-between">
             <Search
               placeholder="Search Projects"

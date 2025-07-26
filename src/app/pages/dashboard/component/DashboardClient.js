@@ -50,9 +50,6 @@ export default function DashboardClient({user}) {
   const [role, setRole] = useState(user?.role || "unknown");
   const [username] = useState(user?.name || "unknnown");
 
-  if (!user) {
-    return <div>401 - Unauthorized. Please <a href="/pages/login">login</a>.</div>;
-  }
 
  
   return (
