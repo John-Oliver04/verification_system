@@ -2,11 +2,12 @@ import Link from "next/link";
 import Image from "next/image";
 
 const images = [
-  "/gallery1.jpg",
-  "/gallery2.jpg",
-  "/gallery3.jpg",
-  "/gallery4.jpg",
-  "/gallery5.jpg",
+  "/gallery/img1.jpg",
+  "/gallery/img2.jpg",
+  "/gallery/img3.jpg",
+  "/gallery/img4.jpg",
+  "/gallery/img5.jpg",
+  "/gallery/img6.jpg",
 ];
 
 export default function Home() {
@@ -62,7 +63,7 @@ export default function Home() {
           <div>
             <h2 className="text-lg font-bold mb-2">TUPAD System</h2>
             <p className="text-sm">Profiling and Verification System</p>
-            <small className="text-sm">Develop by: John Oliver G. Virola</small>
+            <small className="text-sm">Developed by: John Oliver G. Virola</small>
           </div>
 
           {/* Column 2: Account */}

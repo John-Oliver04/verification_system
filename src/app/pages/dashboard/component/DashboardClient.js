@@ -1,6 +1,5 @@
 'use client'
 
-
 import {  useState } from "react";
 import {
   PieChart, Pie, Cell,
@@ -43,7 +42,6 @@ const indigenousData = [
 ];
 
 const COLORS = ["#0088FE", "#FF8042", "#00C49F", "#FFBB28"];
-
 
 export default function DashboardClient({user}) {
 

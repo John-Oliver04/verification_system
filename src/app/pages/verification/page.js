@@ -6,9 +6,10 @@ import Header from "@/app/components/Header";
 import { useSearchParams } from "next/navigation";
 import DetailsPanel from "./component/DetailsPanel";
 import { getUsername } from "@/app/components/GetUsername";
+import jwt from "jsonwebtoken";
+import Unauthorized401 from "@/app/components/Unauthorized401";
 
 const VerificationPage = () => {
-
 
   // getting all the beneficiaries
   const [beneficiaries, setBeneficiaries] = useState([]);

@@ -2,47 +2,19 @@
 
 import { useRouter } from "next/navigation"; // Top of component
 import { useEffect, useRef, useState } from "react";
-import { Table, Input, Button, Dropdown, Modal, Form, InputNumber, Upload } from "antd";
-import { DownOutlined, UploadOutlined } from "@ant-design/icons";
+import { Input, Button, Dropdown, Form } from "antd";
+import { DownOutlined } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import Sidebar from "@/app/components/Sidebar";
 import Header from "@/app/components/Header";
 import Papa from "papaparse";
 import { getUsername } from "@/app/components/GetUsername";
-import jwt from "jsonwebtoken";
-import Unauthorized401 from "@/app/components/Unauthorized401";
+import ProjectTable from "./component/ProjectTable";
 
 
 const { Search } = Input;
 
 const ProjectPage = ({ user }) => {
-  
-  const [userToken, setUserToken] = useState(null);
-
-  useEffect(() => {
-    const getTokenFromCookie = () => {
-      const match = document.cookie.match(/(^| )token=([^;]+)/);
-      return match ? match[2] : null;
-    };
-
-    const token = getTokenFromCookie();
-
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        setUserToken(decoded);
-      } catch (err) {
-        console.error("Invalid token", err);
-        setUserToken(null);
-      }
-    } else {
-      setUserToken(null);
-    }
-  }, []);
-
-  if (userToken === null) {
-    return <Unauthorized401 />;
-  }
 
 
   const [form] = Form.useForm();
@@ -60,9 +32,6 @@ const ProjectPage = ({ user }) => {
     };
     fetchUsername();
   }, []);
-
-
-
 
 
   const [searchText, setSearchText] = useState("");
@@ -83,8 +52,6 @@ const ProjectPage = ({ user }) => {
       console.log("Viewing project:", record.projectName);
     }
   };
-
-
 
   // ✅ Handle CSV Upload
   const handleCSVUpload = (file) => {
@@ -299,65 +266,16 @@ const ProjectPage = ({ user }) => {
             </div>
           </div>
 
-          {/* Search bar */}
-          <div className="mb-4 flex justify-between">
-            <Search
-              placeholder="Search Projects"
-              onChange={(e) => setSearchText(e.target.value)}
-              value={searchText}
-              style={{ width: 300 }}
-            />
-            <Button icon={<UploadOutlined />} onClick={() => setUploadModalOpen(true)}>
-              Upload Project
-            </Button>
-          </div>
-
-          <Table
-            columns={columns}
-            dataSource={filteredData}
-            pagination={{ pageSize: 5 }}
-            bordered
+          {/* Project Table */}
+          <ProjectTable
+            projects={projects}
             loading={loading}
+            handleAction={handleAction}
           />
+
         </section>
 
-        <Modal
-          open={uploadModalOpen}
-          title="Upload New Project"
-          onCancel={() => setUploadModalOpen(false)}
-          footer={[
-            <Button key="cancel" onClick={() => setUploadModalOpen(false)}>Cancel</Button>,
-            <Button key="submit" type="primary" onClick={() => form.submit()}>Save</Button>,
-          ]}
-        >
-          <Form
-            layout="vertical"
-            form={form}
-            onFinish={handleUpload}
-            onFinishFailed={(errorInfo) => console.log("Validation Failed:", errorInfo)}
-          >
-            <Form.Item name="projectName" label="Project Name" rules={[{ required: true }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="adl" label="ADL" rules={[{ required: true }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="beneficiaries" label="Number of Beneficiaries" rules={[{ required: true }]}>
-              <InputNumber className="w-full" />
-            </Form.Item>
-            <Form.Item name="municipality" label="Municipality" rules={[{ required: true }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item label="Upload CSV for Beneficiaries">
-              <Upload
-                accept=".csv"
-                beforeUpload={(file) => handleCSVUpload(file)}
-              >
-                <Button icon={<UploadOutlined />}>Upload CSV</Button>
-              </Upload>
-            </Form.Item>
-          </Form>
-        </Modal>
+
       </main>
     </div>
   );
