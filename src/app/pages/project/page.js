@@ -10,6 +10,7 @@ import Header from "@/app/components/Header";
 import Papa from "papaparse";
 import { getUsername } from "@/app/components/GetUsername";
 import ProjectTable from "./component/ProjectTable";
+import Toolbar from "./component/Toolbar";
 
 
 const { Search } = Input;
@@ -222,19 +223,20 @@ const ProjectPage = ({ user }) => {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <Dropdown menu={{
-                          items: actionMenuItems.map((item) => ({
-                            ...item,
-                            onClick: () => handleAction(item.key, record),
-                          })),
-                        }}
-                      >
+        <Dropdown
+          menu={{
+            items: actionMenuItems,
+            onClick: ({ key }) => handleAction(key, record),
+          }}
+          trigger={["click"]}
+        >
           <Button>
             Action <DownOutlined />
           </Button>
         </Dropdown>
       ),
-    },
+    }
+
   ];
 
   const filteredData = projects.filter((item) =>
@@ -254,17 +256,10 @@ const ProjectPage = ({ user }) => {
         {/* Header */}
         <Header username={username} />
 
-        <section className="p-6">
-           {/* Top Panel for Additional Components */}
-          <div className="bg-gray-100 p-4 mb-4 rounded shadow flex justify-between items-center">
-            <div className="font-semibold text-gray-700">📌 TUPAD Projects Panel</div>
-            {/* You can place buttons or summaries here */}
-            <div>
-              <Button type="link">Stats</Button>
-              <Button type="link">Recent Uploads</Button>
-              <Button type="link">Export</Button>
-            </div>
-          </div>
+        <section className="">
+          {/* Toolbar */}
+          <Toolbar setUploadModalOpen={() => setUploadModalOpen(true)} />
+
 
           {/* Project Table */}
           <ProjectTable

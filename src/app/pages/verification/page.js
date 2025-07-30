@@ -6,8 +6,6 @@ import Header from "@/app/components/Header";
 import { useSearchParams } from "next/navigation";
 import DetailsPanel from "./component/DetailsPanel";
 import { getUsername } from "@/app/components/GetUsername";
-import jwt from "jsonwebtoken";
-import Unauthorized401 from "@/app/components/Unauthorized401";
 
 const VerificationPage = () => {
 
@@ -32,6 +30,7 @@ const VerificationPage = () => {
   // for fetching data
   const searchParams = useSearchParams();
   const projectId = searchParams.get("projectId"); 
+
   useEffect(() => {
     const fetchBeneficiaries = async () => {
       try {
@@ -148,15 +147,15 @@ const FINDINGS_COLORS = {
         <Header username={username} />
 
         {/* First Row: Project Summary Panel */}
-        <div className="bg-white p-6 shadow rounded space-y-4">
+        <div className="bg-white p-6 shadow rounded ">
 
           {/* Project Info */}
           <div>
             {selectedProject ? (
               <div>
-                <h1 className="text-xl font-bold mb-1">
-                  Project: {selectedProject.projectName}
-                </h1>
+                <h5 className="text-sm">
+                  <b>Project:</b> {selectedProject.projectName}
+                </h5>
                 <p className="text-sm">
                   <b>Project Location:</b> {selectedProject.municipality || "N/A"}
                 </p>
@@ -246,7 +245,15 @@ const FINDINGS_COLORS = {
                   </tr>
                 </thead>
                 <tbody>
-                   {beneficiaries.map((b, idx) => (
+                   {beneficiaries.filter((b) => {
+                      const fullName = [b.firstName, b.middleName, b.lastName, b.extensionName]
+                        .filter(Boolean)
+                        .join(" ")
+                        .toLowerCase();
+                      return fullName.includes(searchTerm.toLowerCase());
+                    })
+                    .map((b, idx) => (
+
                     <tr
                       key={idx}
                       className={`border-b border-gray-100 cursor-pointer
