@@ -240,10 +240,11 @@ const ProjectPage = ({ user }) => {
   ];
 
   const filteredData = projects.filter((item) =>
-    Object.values(item).some((val) =>
-      String(val).toLowerCase().includes(searchText.toLowerCase())
-    )
-  );
+  Object.values(item).some((val) =>
+    String(val).toLowerCase().includes(searchText.toLowerCase())
+  )
+);
+
 
   return (
 
@@ -258,15 +259,17 @@ const ProjectPage = ({ user }) => {
 
         <section className="">
           {/* Toolbar */}
-          <Toolbar setUploadModalOpen={() => setUploadModalOpen(true)} />
+          <Toolbar
+            
+            loading={loading}
+            onSearchChange={(value) => setSearchText(value)}
+          />
+
 
 
           {/* Project Table */}
-          <ProjectTable
-            projects={projects}
-            loading={loading}
-            handleAction={handleAction}
-          />
+          <ProjectTable projects={projects}
+            handleAction={handleAction} />
 
         </section>
 
