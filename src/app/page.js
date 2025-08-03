@@ -23,10 +23,10 @@ export default function Home() {
         </p>
         <div className="space-x-4">
           <Link href="/pages/login">
-            <button className="bg-white text-blue-900 px-6 py-2 rounded-lg font-semibold">Login</button>
+            <button className="bg-white text-blue-900 px-6 py-2 rounded-lg font-semibold hover:bg-blue-500 hover:text-white cursor-pointer">Login</button>
           </Link>
           <Link href="/pages/signup">
-            <button className="bg-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-blue-500">Sign Up</button>
+            <button className="bg-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-blue-500 cursor-pointer">Sign Up</button>
           </Link>
         </div>
       </section>

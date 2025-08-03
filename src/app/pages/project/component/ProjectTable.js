@@ -1,31 +1,33 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import React from "react";
 
 
-export default function ProjectTable({ projects, handleAction}) {
+export default function ProjectTable({ projects, loading, handleAction }) {
+
+
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const filteredProjects = projects.filter(p => p.status !== "Completed");
-
   const totalProjects = filteredProjects.length;
+
   const totalBeneficiaries = filteredProjects.reduce(
     (sum, p) => sum + Number(p.beneficiaries || 0),
     0
   );
   const totalDone = filteredProjects.filter(p => p.status === "Done").length;
+console.log("✅ Rendering ProjectTable with:", projects.length, "projects");
 
   return (
     <div className="p-6">
 
       {/* To-Do Section */}
-      
         <div className="">
           <div className="flex text-blue-600 border-b-4">
             <h4
               className="text-blue-600 cursor-pointer  text-xl "
-              onClick={() => setIsCollapsed((prev) => !prev)}
-            >
+              onClick={() => setIsCollapsed((prev) => !prev)}>
               {isCollapsed ? "▲" : "▼"}
             </h4>
             <h3 className="mx-4 text-xl font-bold mb-2 text-blue-600"> To Do</h3>
@@ -44,8 +46,7 @@ export default function ProjectTable({ projects, handleAction}) {
                 </tr>
               </thead>
               <tbody>
-                {projects.map(
-                  (item, index) =>
+                {projects.map((item, index) =>
                     item.status !== "Completed" && (
                       <tr key={index} className="hover:bg-gray-50">
                         <td className="p-2 border border-gray-300">{item.projectName}</td>
@@ -134,7 +135,6 @@ export default function ProjectTable({ projects, handleAction}) {
             </div>
           )}
         </div>
-
 
       {/* Completed Section */}
       <div className="mt-10">

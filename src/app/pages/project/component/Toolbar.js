@@ -10,8 +10,9 @@ import {
 } from "@heroicons/react/24/outline";
 import Papa from "papaparse";
 import { useState, useRef } from "react";
+import React from "react";
 
-export default function Toolbar({ onSearchChange, loading }) {
+function Toolbar({ onSearchChange, loading }) {
   const [csvData, setCsvData] = useState([]);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -226,3 +227,5 @@ export default function Toolbar({ onSearchChange, loading }) {
     </div>
   );
 }
+
+export default React.memo(Toolbar);
