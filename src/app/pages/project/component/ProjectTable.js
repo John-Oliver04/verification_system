@@ -4,7 +4,7 @@ import Image from "next/image";
 import React from "react";
 
 
-export default function ProjectTable({ projects, loading, handleAction }) {
+function ProjectTable({ projects, loading, handleAction }) {
 
 
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -33,33 +33,40 @@ console.log("✅ Rendering ProjectTable with:", projects.length, "projects");
             <h3 className="mx-4 text-xl font-bold mb-2 text-blue-600"> To Do</h3>
           </div>
           {!isCollapsed ? (
-            <table className="w-full text-sm  border-gray-100">
+            <table className="w-full text-sm  border-gray-200">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="p-2 border border-gray-300">Project Name</th>
-                  <th className="p-2 border border-gray-300">ADL</th>
-                  <th className="p-2 border border-gray-300">Beneficiaries</th>
-                  <th className="p-2 border border-gray-300">Municipality</th>
-                  <th className="p-2 border border-gray-300">Progress</th>
-                  <th className="p-2 border border-gray-300">Status</th>
-                  <th className="p-2 border border-gray-300">Action</th>
+                  <th className="p-2 border border-gray-200">Project Name</th>
+                  <th className="p-2 border border-gray-200">ADL</th>
+                  <th className="p-2 border border-gray-200">Beneficiaries</th>
+                  <th className="p-2 border border-gray-200">Municipality</th>
+                  <th className="p-2 border border-gray-200">Progress</th>
+                  <th className="p-2 border border-gray-200">Status</th>
+                  <th className="p-2 border border-gray-200">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {projects.map((item, index) =>
+                {projects.filter(item => item.status !== "Completed").length === 0 ? (
+                  <tr>
+                    <td colSpan="7" className="text-center text-gray-500 py-4">
+                      No projects to display.
+                    </td>
+                  </tr>
+                ) : (
+                  projects.map((item, index) =>
                     item.status !== "Completed" && (
                       <tr key={index} className="hover:bg-gray-50">
-                        <td className="p-2 border border-gray-300">{item.projectName}</td>
-                        <td className="p-2 border border-gray-300">{item.adl}</td>
-                        <td className="p-2 border border-gray-300 text-center">{item.beneficiaries}</td>
-                        <td className="p-2 border border-gray-300">{item.municipality}</td>
-                        <td className="p-2 border border-gray-300">
+                        <td className="p-2 border border-gray-200">{item.projectName}</td>
+                        <td className="p-2 border border-gray-200">{item.adl}</td>
+                        <td className="p-2 border border-gray-200 text-center">{item.beneficiaries}</td>
+                        <td className="p-2 border border-gray-200">{item.municipality}</td>
+                        <td className="p-2 border border-gray-200">
                           <div className="w-full bg-gray-200 rounded-full h-5 relative overflow-hidden">
                             <div
                               className="absolute top-0 left-0 h-5 rounded-full"
                               style={{
                                 width: `${item.progress}`,
-                                backgroundColor: "#3b82f6", // or use bg-blue-500 dynamically
+                                backgroundColor: "#3b82f6",
                               }}
                             ></div>
                             <div className="h-5 w-full flex items-center justify-center text-xs font-medium text-gray-900 z-10 relative">
@@ -68,34 +75,27 @@ console.log("✅ Rendering ProjectTable with:", projects.length, "projects");
                           </div>
                         </td>
                         <td
-                          className={`p-2 border text-center text-white text-sm font-medium
-                            ${
-                              item.status === "Done"
-                                ? "bg-green-600"
-                                : item.status === "Working on it"
-                                ? "bg-yellow-500"
-                                : item.status === "Stuck"
-                                ? "bg-red-600"
-                                : item.status === "Not Started"
-                                ? "bg-slate-500"
-                                : "bg-gray-400"
-                            }
-                          `}
+                          className={`p-2 border text-center text-white text-sm font-medium ${
+                            item.status === "Done"
+                              ? "bg-green-600"
+                              : item.status === "Working on it"
+                              ? "bg-yellow-500"
+                              : item.status === "Stuck"
+                              ? "bg-red-600"
+                              : item.status === "Pending"
+                              ? "bg-slate-500"
+                              : "bg-gray-400"
+                          }`}
                         >
                           {item.status}
                         </td>
-
-
-
-                        <td className="p-2 border  border-gray-300">
+                        <td className="p-2 border border-gray-300">
                           <select
-                            className="border  border-gray-300 px-2 py-1 rounded"
+                            className="border border-gray-300 px-2 py-1 rounded"
                             onChange={(e) => handleAction(e.target.value, item)}
                             defaultValue=""
                           >
-                            <option value="" disabled>
-                              Action
-                            </option>
+                            <option value="" disabled>Action</option>
                             <option value="validate">Validate</option>
                             <option value="view">View</option>
                             <option value="edit">Edit</option>
@@ -105,8 +105,10 @@ console.log("✅ Rendering ProjectTable with:", projects.length, "projects");
                         </td>
                       </tr>
                     )
+                  )
                 )}
               </tbody>
+
             </table>
                   ) : (
             <div className="p-4 bg-gray-50 border border-gray-200 rounded shadow-sm">
@@ -136,50 +138,63 @@ console.log("✅ Rendering ProjectTable with:", projects.length, "projects");
           )}
         </div>
 
-      {/* Completed Section */}
-      <div className="mt-10">
-        <h2 className="text-xl font-bold mb-2 text-green-600">Completed</h2>
-        <table className="w-full text-sm border">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-2 border">Project Name</th>
-              <th className="p-2 border">ADL</th>
-              <th className="p-2 border">Beneficiaries</th>
-              <th className="p-2 border">Municipality</th>
-              <th className="p-2 border">Progress</th>
-              <th className="p-2 border">Status</th>
-              <th className="p-2 border">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map(
-              (item, index) =>
-                item.status === "Completed" && (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="p-2 border">{item.projectName}</td>
-                    <td className="p-2 border">{item.adl}</td>
-                    <td className="p-2 border text-center">{item.beneficiaries}</td>
-                    <td className="p-2 border">{item.municipality}</td>
-                    <td className="p-2 border">
-                      <div className="w-full bg-gray-200 rounded-full h-5 relative">
-                        <div
-                          className="bg-blue-500 h-5 rounded-full text-white text-xs flex items-center justify-center"
-                          style={{ width: `${item.progress}`}}
-                        >
-                          {item.progress}%
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-2 border text-green-600 font-semibold">Completed</td>
-                    <td className="p-2 border text-center">—</td>
-                  </tr>
+        {/* Completed Section */}
+        <div className="mt-10 ">
+          <div className="flex text-green-600 border-b-4">
+            <h2 className="mb-0 text-xl font-bold">Completed</h2>
+          </div>
+          <table className="w-full text-sm border-gray-200">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-2 border-gray-200">Project Name</th>
+                <th className="p-2 border-gray-200">ADL</th>
+                <th className="p-2 border-gray-200">Beneficiaries</th>
+                <th className="p-2 border-gray-200">Municipality</th>
+                <th className="p-2 border-gray-200">Progress</th>
+                <th className="p-2 border-gray-200">Status</th>
+                <th className="p-2 border-gray-200">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projects.filter(item => item.status === "Completed").length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="text-center text-gray-500 py-4">
+                    No completed projects to display.
+                  </td>
+                </tr>
+              ) : (
+                projects.map(
+                  (item, index) =>
+                    item.status === "Completed" && (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="p-2 border">{item.projectName}</td>
+                        <td className="p-2 border">{item.adl}</td>
+                        <td className="p-2 border text-center">{item.beneficiaries}</td>
+                        <td className="p-2 border">{item.municipality}</td>
+                        <td className="p-2 border">
+                          <div className="w-full bg-gray-200 rounded-full h-5 relative">
+                            <div
+                              className="bg-blue-500 h-5 rounded-full text-white text-xs flex items-center justify-center"
+                              style={{ width: `${item.progress}` }}
+                            >
+                              {item.progress}%
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-2 border text-green-600 font-semibold">Completed</td>
+                        <td className="p-2 border text-center">—</td>
+                      </tr>
+                    )
                 )
-            )}
-          </tbody>
-        </table>
-      </div>
+              )}
+            </tbody>
+          </table>
+        </div>
+
 
 
     </div>
   );
 }
+
+export default React.memo(ProjectTable);

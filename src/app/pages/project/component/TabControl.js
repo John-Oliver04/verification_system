@@ -8,6 +8,7 @@ import { Form, Input } from "antd";
 import Papa from "papaparse";
 import useDebouncedValue from "@/app/lib/useDebouncedValue";
 import { getUserIdFromToken } from "@/app/components/GetUserIdFromToken";
+import KanbanView from "./KanbanView";
 
 export default function TabControl() {
   const [projects, setProjects] = useState([]);
@@ -197,7 +198,7 @@ export default function TabControl() {
     const key = `status-${newTabCount}`;
     setTabs((prevTabs) => [
       ...prevTabs,
-      { key, label: `Status View ${newTabCount}`, content: `This is Status View ${newTabCount}` },
+      { key, label: `Status View ${newTabCount}`,  content: <KanbanView projects={filteredData} /> },
     ]);
     setActiveTab(key);
     setNewTabCount((count) => count + 1);
@@ -214,11 +215,11 @@ export default function TabControl() {
 
   return (
     <div className="p-4">
-      <div className="flex space-x-2 border-b pb-1 relative">
+      <div className="flex space-x-2 border-b border-blue-300 pb-1 relative">
         {tabs.map((tab) => (
           <div
             key={tab.key}
-            className={`px-4 py-2 cursor-pointer rounded-t ${activeTab === tab.key ? "bg-white border border-b-0" : "bg-gray-200"}`}
+            className={`px-4 py-2 cursor-pointer rounded-t ${activeTab === tab.key ? "bg-white border border-b-0 border-blue-500" : "bg-gray-200"}`}
             onClick={() => setActiveTab(tab.key)}
           >
             <div className="flex items-center space-x-2">
@@ -247,7 +248,7 @@ export default function TabControl() {
           </button>
 
           {showDropdown && (
-            <div className="absolute z-10 top-10 right-0 bg-white border rounded shadow-md w-40">
+            <div className="absolute z-10 top-10 right-0 bg-white border-blue-500 rounded shadow-md w-40">
               <button
                 onClick={addStatusTab}
                 className="w-full px-4 py-2 text-left hover:bg-blue-100"
@@ -259,7 +260,7 @@ export default function TabControl() {
         </div>
       </div>
 
-      <div className="mt-4 border p-4 rounded bg-white shadow">
+      <div className="mt-4 p-2 rounded bg-white shadow">
         {activeTab === "table" ? (
           <div className="space-y-4">
             <Toolbar onSearchChange={setSearchText} loading={loading} />
